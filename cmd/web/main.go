@@ -30,9 +30,15 @@ func main() {
 	// this way render package gets access to app-wide AppConfig
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-
 	fmt.Println(fmt.Sprintf("Starting application on port %s", port))
-	_ = http.ListenAndServe(port, nil)
+
+	serve := &http.Server{
+		Addr:    port,
+		Handler: Routes(&app),
+	}
+
+	err = serve.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
