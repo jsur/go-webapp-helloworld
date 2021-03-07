@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/jsur/go-web-helloworld/pkg/config"
+	"github.com/jsur/go-web-helloworld/pkg/models"
 	"github.com/jsur/go-web-helloworld/pkg/render"
 )
 
@@ -29,10 +30,16 @@ func NewHandlers(r *Repository) {
 
 // Home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.GetTemplate(w, "home.page.tmpl")
+	render.GetTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.GetTemplate(w, "about.page.tmpl")
+
+	stringMap := make(map[string]string)
+	stringMap["test"] = "Hello again."
+
+	render.GetTemplate(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }

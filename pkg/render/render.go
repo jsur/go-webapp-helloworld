@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/jsur/go-web-helloworld/pkg/config"
+	"github.com/jsur/go-web-helloworld/pkg/models"
 )
 
 // a map of custom functions that are needed in a template
@@ -21,8 +22,13 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
+// AddDefaultData adds shared/common data to each page
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
 // GetTemplate renders templates using html/template
-func GetTemplate(w http.ResponseWriter, tmpl string) {
+func GetTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 
 	if app.UseCache {
@@ -41,8 +47,10 @@ func GetTemplate(w http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	// store template in buffer without any additional data
-	_ = t.Execute(buf, nil)
+	td = AddDefaultData(td)
+
+	// store template in buffer with templatedata
+	_ = t.Execute(buf, td)
 
 	_, err := buf.WriteTo(w)
 	if err != nil {
