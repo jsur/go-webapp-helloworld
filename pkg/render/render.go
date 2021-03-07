@@ -7,22 +7,36 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/jsur/go-web-helloworld/pkg/config"
 )
 
 // a map of custom functions that are needed in a template
 var functions = template.FuncMap{}
 
+var app *config.AppConfig
+
+// NewTemplates sets the config for the template package
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
 // RenderTemplate renders templates using html/template
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
+	var tc map[string]*template.Template
+
+	if app.UseCache {
+		// get the template cache from app-wide AppConfig
+		tc = app.TemplateCache
+	} else {
+		// for dev
+		tc, _ = CreateTemplateCache()
 	}
 
 	// ok will be set to false if no value is found from map
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("Could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -30,7 +44,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	// store template in buffer without any additional data
 	_ = t.Execute(buf, nil)
 
-	_, err = buf.WriteTo(w)
+	_, err := buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
 	}
