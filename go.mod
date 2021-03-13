@@ -2,4 +2,7 @@ module github.com/jsur/go-web-helloworld
 
 go 1.12
 
-require github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
+require (
+	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/justinas/nosurf v1.1.1 // indirect
+)
